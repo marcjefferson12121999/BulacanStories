@@ -1,11 +1,34 @@
-const express = require('express')
+const express = require("express")
+const dotenv = require ('dotenv')
+const morgan = require ('morgan')
+const exphbs = require ('exphbs')
+const connectDB = require("./config/db")
+
+// Load Config
+dotenv.config({path:'./config/config.env'})
+connectDB()
 const app = express()
-const port = 3000
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+//Logging
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
-})
+if (process.env.NODE_ENV === 'development'){
+
+    app.use(morgan('dev'))
+
+}
+//Handlebars
+app.engine('.hbs', exphbs({defaultLayout: 'main', extname: '.hbs'}));
+app.set('view engine', '.hbs');
+
+//Routes
+app.use('/', require ('./routes/index'))
+
+
+const PORT = process.env.PORT || 3000
+
+
+
+app.listen(
+PORT,
+console.log(`Server running in ${process.env.NODE_ENV} mode on port${PORT}`)
+)
